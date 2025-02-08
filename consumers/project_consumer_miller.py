@@ -69,13 +69,19 @@ def update_chart():
     # Clear the previous chart
     ax.clear()
 
+    # Create an empty list for the plot handles (lines) and labels
+    plot_handles = []
+    labels = []
+
     # Iterate over authors and plot their sentiment velocity over time
     for author, data in author_velocity.items():
         timestamps = [entry[0] for entry in data]
         velocities = [entry[1] for entry in data]
 
         # Plot the author's sentiment velocity over time as a line plot
-        ax.plot(timestamps, velocities, label=author)
+        line, = ax.plot(timestamps, velocities, label=author)
+        plot_handles.append(line)
+        labels.append(author)
 
     # Set labels and title for the chart
     ax.set_xlabel("Timestamp")
@@ -86,6 +92,9 @@ def update_chart():
     x_labels = [timestamp.strftime("%H:%M:%S") for timestamp in timestamps]
     ax.set_xticks(timestamps)  # Set the tick positions to the actual timestamps
     ax.set_xticklabels(x_labels, rotation=45, ha="right")  # Format the labels
+
+    # Add the legend to the plot
+    ax.legend(loc="upper left", handles=plot_handles, labels=labels)
 
     # Adjust layout for better spacing
     plt.tight_layout()
