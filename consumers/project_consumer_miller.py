@@ -73,6 +73,9 @@ def update_chart():
     plot_handles = []
     labels = []
 
+    # Collect all timestamps across all authors for the x-axis
+    all_timestamps = []
+
     # Iterate over authors and plot their sentiment velocity over time
     for author, data in author_velocity.items():
         timestamps = [entry[0] for entry in data]
@@ -83,14 +86,22 @@ def update_chart():
         plot_handles.append(line)
         labels.append(author)
 
+        # Collect all timestamps (for x-axis) across all authors
+        all_timestamps.extend(timestamps)
+
+    # Ensure all timestamps are sorted for accurate plotting on the x-axis
+    all_timestamps = sorted(set(all_timestamps))  # Remove duplicates and sort
+
     # Set labels and title for the chart
     ax.set_xlabel("Timestamp")
     ax.set_ylabel("Sentiment Velocity (d/dt)")
     ax.set_title("Real-Time Sentiment Velocity - Stephen Miller")
 
-    # Format the x-axis labels as hour:minute:second
-    x_labels = [timestamp.strftime("%H:%M:%S") for timestamp in timestamps]
-    ax.set_xticks(timestamps)  # Set the tick positions to the actual timestamps
+    # Select every 6th timestamp (every 30 seconds) for x-axis ticks from the all_timestamps
+    plot_timestamps = [all_timestamps[i] for i in range(0, len(all_timestamps), 6)]  # every 6th timestamp
+    x_labels = [timestamp.strftime("%H:%M:%S") for timestamp in plot_timestamps]  # format labels as hour:minute:second
+    
+    ax.set_xticks(plot_timestamps)  # Set the tick positions to the filtered timestamps
     ax.set_xticklabels(x_labels, rotation=45, ha="right")  # Format the labels
 
     # Add the legend to the plot
